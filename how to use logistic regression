@@ -1,0 +1,29 @@
+import numpy as np
+from sklearn.datasets import make_classification
+import matplotlib.pyplot as plt
+from sklearn.linear_model import LogisticRegression
+
+X, y = make_classification(n_samples=100, n_features=2, n_redundant=0, random_state=42)
+plt.scatter(X.T[0], X.T[1], c=y)
+plt.xlabel('x1')
+plt.ylabel('x2')
+
+model=LogisticRegression(solver='liblinear', C=0.1)
+from sklearn.model_selection import cross_validate
+cross_validate(model, X, y, cv=10)['test_score'].mean()
+model.fit(X, y)
+
+x11, x22 = np.meshgrid(
+    np.linspace(X.T[0].min(), X.T[0].max(), 1000),
+    np.linspace(X.T[1].min(), X.T[1].max(), 1000)
+)
+plt.scatter(X.T[0], X.T[1], c=y, edgecolors='black', linewidths=2)
+plt.xlabel('x1')
+plt.ylabel('x2')
+plt.contourf(x11,
+             x22,
+             model.predict(
+                 np.array(
+                     [x11.ravel(),
+                     x22.ravel()]
+                         ).T).reshape(x11.shape), alpha=0.5)
